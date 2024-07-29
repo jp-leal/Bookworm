@@ -6,16 +6,40 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
+    
+    @Environment(\.modelContext) var context
+    @Query var books: [Book]
+
+    @State private var showingAddScreen = false
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            List{
+                ForEach(books) { book in
+                    NavigationLink(value: book) {
+                        HStack{
+                            EmojiRatingView(rating: book.rating)
+                                .font(.largeTitle)
+                        }
+                    }}
+            }
+                .navigationTitle("BookWorm")
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing)
+                                {
+                        Button("Add Book", systemImage: "plus") {
+                            showingAddScreen.toggle()
+                        }}
+                }
+                .sheet(isPresented: $showingAddScreen) {
+                    AddBookView()
+                }
+           
+    
         }
-        .padding()
     }
 }
 
